@@ -22,6 +22,10 @@ app.layout = html.Div(children=[
         figure=us_covid_map
     ),
     html.A('Code on Github', href='https://github.com/jzlandis/plotly_covid'),
+    html.Br(),
+    html.A('New York Times Covid-19 Data', href='https://github.com/nytimes/covid-19-data'),
+    html.Br(),
+    html.A('County Population Data', href='https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/co-est2019-alldata.csv')
     ]
 )
 

@@ -30,6 +30,10 @@ app.layout = html.Div(
         html.P(
             "Counties in the New York City area report total cases for all of Bronx, Kings, New York, Queens, and Richmond counties on each county and compare them to the sum of all 5 counties populations"
         ),
+        html.A(
+            "New York Times Covid-19 US Case Data Maps",
+            href="https://www.nytimes.com/interactive/2020/us/coronavirus-us-cases.html",
+        ),
         html.Br(),
         html.A(
             "County Population Data",

@@ -25,6 +25,8 @@ app.layout = html.Div(children=[
     html.Br(),
     html.A('New York Times Covid-19 Data', href='https://github.com/nytimes/covid-19-data'),
     html.Br(),
+    html.P('Counties in the New York City area report total cases for all of Bronx, Kings, New York, Queens, and Richmond counties on each county and compare them to the sum of all 5 counties populations'),
+    html.Br(),
     html.A('County Population Data', href='https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/co-est2019-alldata.csv')
     ]
 )

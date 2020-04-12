@@ -11,8 +11,13 @@ import plotly.graph_objects as go
 from data_gather import corona_dict, counties2fips
 from map_figure import us_covid_map
 
+from raccogliere_dati import time_series_data as italian_data
+from raccogliere_dati import location2id as ita_loc2id
 
-title = "Covid-19 Data by US County"
+corona_dict = {**corona_dict, **italian_data}
+counties2fips = {**counties2fips, **ita_loc2id}
+
+title = "Covid-19 Data for Select Regions"
 location = 'Tarrant, Texas'
 
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
@@ -26,16 +31,20 @@ app.layout = html.Div([
     ], className='row'),
     html.Div([
         html.Div([
+            html.H3('Cases per US County - colored by log(cases/100k ppl)'),
             dcc.Graph(
                 id='us_covid_map',
                 figure=us_covid_map,
-                #style={'height': '100vh'}
             ),
         ], className='six columns'),
         html.Div([
+            html.H3('Confirmed Cases vs. Date'),
             dcc.Graph(
                 id='scatter',
-                #style={'height': '30vh'}
+            ),
+            html.P(
+                f'Select Regional Data to Plot '
+                f'(US Counties + Italian Provinces)'
             ),
             dcc.Dropdown(
                 id='dropdown',
@@ -72,9 +81,14 @@ app.layout = html.Div([
         ),
         html.Br(),
         html.A(
-            "County Population Data",
+            "US County Population Data",
             href="https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/co-est2019-alldata.csv",
         ),
+        html.Br(),
+        html.A(
+            'Dipartimento della Protezione Civile Italian Case Data',
+            href="https://github.com/pcm-dpc/COVID-19"
+        )
     ], className='row')
 ])
 

@@ -18,117 +18,127 @@ corona_dict = {**corona_dict, **italian_data}
 counties2fips = {**counties2fips, **ita_loc2id}
 
 title = "Covid-19 Data for Select Regions"
-location = 'Tarrant, Texas'
+location = "Tarrant, Texas"
 
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 app.title = title
 
-app.layout = html.Div([
-    html.Div([
-        html.H1(title),
-    ], className='row'),
-    html.Div([
-        html.Div([
-            html.H3('Cases per US County - colored by log(cases/100k ppl)'),
-            dcc.Graph(
-                id='us_covid_map',
-                figure=us_covid_map,
-            ),
-        ], className='six columns'),
-        html.Div([
-            html.H3('Confirmed Cases vs. Date'),
-            dcc.Graph(
-                id='scatter',
-            ),
-            html.P(
-                f'Select Regional Data to Plot '
-                f'(US Counties + Italian Provinces)'
-            ),
-            dcc.Dropdown(
-                id='dropdown',
-                options=[
-                    {'label':k, 'value':v} for k, v in counties2fips.items()
-                ],
-                value=[counties2fips[location],],
-                multi=True
-            ),
-            dcc.Checklist(
-                id='log_selection',
-                options=[
-                    {'label': 'Y Log Scale', 'value': 'log'},
-                    {'label': 'Cases Relative to Total', 'value': 'rel'}
-                ],
-                value=[]
-            ),
-        ], className='six columns')
-    ], className='row'),
-    html.Div([
-        html.A("Code on Github", href="https://github.com/jzlandis/plotly_covid"),
-        html.Br(),
-        html.A(
-            "New York Times Covid-19 Data",
-             href="https://github.com/nytimes/covid-19-data",
+app.layout = html.Div(
+    [
+        html.Div([html.H1(title),], className="row"),
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H3("Cases per US County - colored by log(cases/100k ppl)"),
+                        dcc.Graph(id="us_covid_map", figure=us_covid_map,),
+                    ],
+                    className="six columns",
+                ),
+                html.Div(
+                    [
+                        html.H3("Confirmed Cases vs. Date"),
+                        dcc.Graph(id="scatter",),
+                        html.P(
+                            f"Select Regional Data to Plot "
+                            f"(US Counties + Italian Provinces)"
+                        ),
+                        dcc.Dropdown(
+                            id="dropdown",
+                            options=[
+                                {"label": k, "value": v}
+                                for k, v in counties2fips.items()
+                            ],
+                            value=[counties2fips[location],],
+                            multi=True,
+                        ),
+                        dcc.Checklist(
+                            id="log_selection",
+                            options=[
+                                {"label": "Y Log Scale", "value": "log"},
+                                {"label": "Cases Relative to Total", "value": "rel"},
+                            ],
+                            value=[],
+                        ),
+                    ],
+                    className="six columns",
+                ),
+            ],
+            className="row",
         ),
-        html.Br(),
-        html.P(
-            "Counties in the New York City area report total cases for all of Bronx, Kings, New York, Queens, and Richmond counties on each county and compare them to the sum of all 5 counties populations"
+        html.Div(
+            [
+                html.A(
+                    "Code on Github", href="https://github.com/jzlandis/plotly_covid"
+                ),
+                html.Br(),
+                html.A(
+                    "New York Times Covid-19 Data",
+                    href="https://github.com/nytimes/covid-19-data",
+                ),
+                html.Br(),
+                html.P(
+                    "Counties in the New York City area report total cases for all of Bronx, Kings, New York, Queens, and Richmond counties on each county and compare them to the sum of all 5 counties populations"
+                ),
+                html.A(
+                    "New York Times Covid-19 US Case Data Maps",
+                    href="https://www.nytimes.com/interactive/2020/us/coronavirus-us-cases.html",
+                ),
+                html.Br(),
+                html.A(
+                    "US County Population Data",
+                    href="https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/co-est2019-alldata.csv",
+                ),
+                html.Br(),
+                html.A(
+                    "Dipartimento della Protezione Civile Italian Case Data",
+                    href="https://github.com/pcm-dpc/COVID-19",
+                ),
+            ],
+            className="row",
         ),
-        html.A(
-            "New York Times Covid-19 US Case Data Maps",
-            href="https://www.nytimes.com/interactive/2020/us/coronavirus-us-cases.html",
-        ),
-        html.Br(),
-        html.A(
-            "US County Population Data",
-            href="https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/co-est2019-alldata.csv",
-        ),
-        html.Br(),
-        html.A(
-            'Dipartimento della Protezione Civile Italian Case Data',
-            href="https://github.com/pcm-dpc/COVID-19"
-        )
-    ], className='row')
-])
+    ]
+)
+
 
 @app.callback(
-    Output(component_id='scatter', component_property='figure'),
-    [Input(component_id='dropdown', component_property='value'),
-     Input(component_id='log_selection', component_property='value'),
-    ]
+    Output(component_id="scatter", component_property="figure"),
+    [
+        Input(component_id="dropdown", component_property="value"),
+        Input(component_id="log_selection", component_property="value"),
+    ],
 )
 def update_graph(county_values, plot_options):
     figure = go.Figure()
     for value in county_values:
         ys = [x[1][0] for x in corona_dict[value][3]]
-        if 'rel' in plot_options:
-            c = max(ys)*1.
+        if "rel" in plot_options:
+            c = max(ys) * 1.0
         else:
-            c = 1.
-        figure.add_trace(go.Scatter(
-            x=[x[0] for x in corona_dict[value][3]],
-            y=[y/c for y in ys],
-            name=', '.join(corona_dict[value][1::-1])
-        ))
+            c = 1.0
+        figure.add_trace(
+            go.Scatter(
+                x=[x[0] for x in corona_dict[value][3]],
+                y=[y / c for y in ys],
+                name=", ".join(corona_dict[value][1::-1]),
+            )
+        )
     ul_kwargs = {}
-    title='Confirmed Cases vs. Date'
-    xlabel='Date'
-    ylabel='Confirmed Cases'
+    title = "Confirmed Cases vs. Date"
+    xlabel = "Date"
+    ylabel = "Confirmed Cases"
     if len(county_values) == 1:
-        title += (' for ' + ', '.join(corona_dict[county_values[0]][1::-1]))
-    if 'rel' in plot_options:
-        title += ' (cases relative to total)'
-        ylabel='Portion of Confirmed Cases'
-    if 'log' in plot_options:
-        ul_kwargs['yaxis_type'] = 'log'
-        ylabel += ' (log scale)'
+        title += " for " + ", ".join(corona_dict[county_values[0]][1::-1])
+    if "rel" in plot_options:
+        title += " (cases relative to total)"
+        ylabel = "Portion of Confirmed Cases"
+    if "log" in plot_options:
+        ul_kwargs["yaxis_type"] = "log"
+        ylabel += " (log scale)"
     figure.update_layout(
-        title=title,
-        xaxis_title=xlabel,
-        yaxis_title=ylabel,
-        hovermode='x',
-        **ul_kwargs
+        title=title, xaxis_title=xlabel, yaxis_title=ylabel, hovermode="x", **ul_kwargs
     )
     return figure
 

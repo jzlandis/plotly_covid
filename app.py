@@ -96,6 +96,11 @@ app.layout = html.Div(
                     "Dipartimento della Protezione Civile Italian Case Data",
                     href="https://github.com/pcm-dpc/COVID-19",
                 ),
+                html.Br(),
+                html.A(
+                    "Italian province populations",
+                    href="https://www.comuniecitta.it/province-italiane-per-popolazione",
+                )
             ],
             className="row",
         ),

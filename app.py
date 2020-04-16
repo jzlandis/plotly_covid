@@ -132,7 +132,7 @@ def update_graph(county_values, plot_options, case_display_mode):
         if case_display_mode == "reltot":
             c = max(ys) * 1.0
         elif case_display_mode == "relpop":
-            c = corona_dict[value][2]
+            c = corona_dict[value][2] / 100000.
         else:
             c = 1.0
         figure.add_trace(
@@ -153,7 +153,7 @@ def update_graph(county_values, plot_options, case_display_mode):
         ylabel = "Portion of Confirmed Cases"
     elif case_display_mode == "relpop":
         title += " (cases relative to population)"
-        ylabel = "Cases / Population"
+        ylabel = "Cases / 100k People"
     if "log" in plot_options:
         ul_kwargs["yaxis_type"] = "log"
         ylabel += " (log scale)"

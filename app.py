@@ -63,13 +63,26 @@ app.layout = html.Div(
                             id="case_display_mode",
                             options=[
                                 {"label": "Raw Case Numbers (default)", "value": "raw"},
-                                {"label": "Cases Relative to Total", "value": "reltot"},
+                                {"label": "Cases Relative to Peak", "value": "reltot"},
                                 {
                                     "label": "Cases Relative to Population",
                                     "value": "relpop",
                                 },
                             ],
                             value="raw",
+                            labelStyle={"display": "inline-block"},
+                        ),
+                        dcc.RadioItems(
+                            id="counts_type",
+                            options=[
+                                {
+                                    "label": "Cumulative Total Cases (default)",
+                                    "value": "cum",
+                                },
+                                {"label": "Delta Cases per Day", "value": "delta"},
+                            ],
+                            value="cum",
+                            labelStyle={"display": "inline-block"},
                         ),
                     ],
                     className="six columns",
@@ -123,16 +136,23 @@ app.layout = html.Div(
         Input(component_id="dropdown", component_property="value"),
         Input(component_id="log_selection", component_property="value"),
         Input(component_id="case_display_mode", component_property="value"),
+        Input(component_id="counts_type", component_property="value"),
     ],
 )
-def update_graph(county_values, plot_options, case_display_mode):
+def update_graph(county_values, plot_options, case_display_mode, counts_type):
     figure = go.Figure()
     for value in county_values:
-        ys = [x[1][0] for x in corona_dict[value][3]]
+        if counts_type == "cum":
+            ys = [x[1][0] for x in corona_dict[value][3]]
+        elif counts_type == "delta":
+            ybase = corona_dict[value][3]
+            ys = [ybase[0][1][0],] + [
+                ybase[i + 1][1][0] - ybase[i][1][0] for i in range(len(ybase) - 1)
+            ]
         if case_display_mode == "reltot":
             c = max(ys) * 1.0
         elif case_display_mode == "relpop":
-            c = corona_dict[value][2] / 100000.
+            c = corona_dict[value][2] / 100000.0
         else:
             c = 1.0
         figure.add_trace(
@@ -143,17 +163,22 @@ def update_graph(county_values, plot_options, case_display_mode):
             )
         )
     ul_kwargs = {}
-    title = "Confirmed Cases vs. Date"
+    if counts_type == "cum":
+        title = "Cumulative Confirmed Cases vs. Date"
+        ident = "Cumulative Cases"
+    elif counts_type == "delta":
+        title = "Delta Confirmed Cases vs. Date"
+        ident = "Delta Cases"
     xlabel = "Date"
-    ylabel = "Confirmed Cases"
+    ylabel = ident
     if len(county_values) == 1:
         title += " for " + ", ".join(corona_dict[county_values[0]][1::-1])
     if case_display_mode == "reltot":
-        title += " (cases relative to total)"
-        ylabel = "Portion of Confirmed Cases"
+        title += f" ({ident.lower()} relative to peak)"
+        ylabel = f"Portion of {ident.lower()}"
     elif case_display_mode == "relpop":
-        title += " (cases relative to population)"
-        ylabel = "Cases / 100k People"
+        title += f" ({ident.lower()} relative to population)"
+        ylabel = f"{ident} / 100k People"
     if "log" in plot_options:
         ul_kwargs["yaxis_type"] = "log"
         ylabel += " (log scale)"

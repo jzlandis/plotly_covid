@@ -1,4 +1,4 @@
-# Covid-19 Data by County
+# Covid-19 Data by for Selected Regions
 
 ### [See the graph hosted on Heroku](https://plotly-covid.herokuapp.com)
 

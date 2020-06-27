@@ -42,5 +42,6 @@ for entry in data:
     if code in time_series_data.keys():
         time_series_data[code][-1].append((date, (tc, None)))
     else:
-        time_series_data[code] = [dp, dr, provreg2pop[provreg], [(date, (tc, None)),]]
+        pop = provreg2pop.get(provreg, 1)
+        time_series_data[code] = [dp, dr, pop, [(date, (tc, None)),]]
     location2id[provreg] = code
